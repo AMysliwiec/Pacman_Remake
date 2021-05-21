@@ -1,3 +1,3 @@
 # Pacman_AlutkaEdition
-
-czy coś sie dzieje
+## Author: Alicja Myśliwiec
+### Description should be here soon
