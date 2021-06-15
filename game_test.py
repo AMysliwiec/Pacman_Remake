@@ -15,28 +15,34 @@ class Game(object):
 
     level = "easy"
 
-
     def __init__(self):
         self.font = pygame.font.Font(None, 40)
         self.about = False
+        self.rules = False
         self.best = False
         self.game_over = True
+        self.game_over_screen = False
 
-        # Create the font for displaying the score on the screen
-        self.font = pygame.font.Font(None, 35)
-        self.menu = Menu(("Easy LVL", "Less Easy LVL", "About", "Best scores", "Exit"), font_color=WHITE, font_size=60)
+        self.font = pygame.font.Font("ARCADE_N.TTF", 15)
+        self.menu = Menu(("Easy LVL", "Less Easy LVL", "How to play", "About", "Best scores", "Exit"),
+                         font_color=WHITE, font_size=30)
         self.player = Player(PACMAN_PLACE, "images/start.png")
+
         self.walls = pygame.sprite.Group()
         for wall in WALLS:
             self.walls.add(Block(wall, CELL_SIZE, CELL_SIZE))
+
         self.enemies = pygame.sprite.Group()
         self.ghost1 = Ghost(vector(9, 19), 3, 0, "pink")
         self.ghost2 = Ghost(vector(17, 2), 0, -3, "blue")
         self.ghost3 = Ghost(vector(1, 1), 0, 3, "green")
+
         if self.level == "less_easy":
             self.ghost1 = Ghost(vector(1, 18), 0, -3, "pink")
             self.ghost4 = Ghost(vector(17, 17), 0, -3, "orange")
+
         self.ghost_list = [self.ghost1, self.ghost2, self.ghost3]
+
         if self.level == "less_easy":
             self.ghost_list.append(self.ghost4)
             for ghost in self.ghost_list:
@@ -48,15 +54,21 @@ class Game(object):
         self.pacman_sound = pygame.mixer.Sound("sounds/pacman_sound.ogg")
         self.game_over_sound = pygame.mixer.Sound("sounds/game_over_sound.ogg")
         self.hit_sound = pygame.mixer.Sound("sounds/hit_sound.ogg")
+        self.hello = pygame.mixer.Sound("sounds/obi-wan-hello-there.mp3")
+        self.hello.set_volume(10.0)
 
     def process_events(self):
-        for event in pygame.event.get():  # User did something
-            if event.type == pygame.QUIT:  # If user clicked close
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 return True
-            self.menu.event_handler(event)
+            if self.game_over and not self.game_over_screen:
+                self.menu.event_handler(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    if self.game_over and not self.about:
+
+                    if self.game_over and not self.about and not self.game_over_screen \
+                            and not self.rules and not self.best:
+
                         if self.menu.state == 0:
                             # ---- START ------
                             self.level = "easy"
@@ -67,22 +79,32 @@ class Game(object):
                                 self.dots_group.add(Point(place, WHITE, 8, 8))
                             self.__init__()
                             self.game_over = False
+
                         elif self.menu.state == 1:
                             self.level = "less_easy"
                             self.score = -1
-                            self.lives = 2
+                            self.lives = 1
                             self.dots_group.empty()
                             for place in CAN_GO:
                                 self.dots_group.add(Point(place, WHITE, 8, 8))
                             self.__init__()
                             self.game_over = False
+
                         elif self.menu.state == 2:
-                            # --- ABOUT ------
-                            self.about = True
+                            # --- HOW TO PLAY ------
+                            self.rules = True
+
+
                         elif self.menu.state == 3:
+                            # --- ABOUT ------
+                            self.hello.play()
+                            self.about = True
+
+                        elif self.menu.state == 4:
                             # --- LEADERBOARD ------
                             self.best = True
-                        elif self.menu.state == 4:
+
+                        elif self.menu.state == 5:
                             # --- EXIT -------
                             # User clicked exit
                             return True
@@ -100,9 +122,12 @@ class Game(object):
                     self.player.move_down()
 
                 elif event.key == pygame.K_ESCAPE:
+                    self.pacman_sound.play()
                     self.game_over = True
                     self.about = False
                     self.best = False
+                    self.rules = False
+                    self.game_over_screen = False
 
             if self.level == "less_easy":
                 if event.type == pygame.KEYUP:
@@ -116,7 +141,6 @@ class Game(object):
                         self.player.stop_move_down()
 
         return False
-
 
     def run_logic(self):
         if not self.game_over:
@@ -144,9 +168,6 @@ class Game(object):
                         self.player.change_y = 0
 
             self.enemies.update()
-            """ghost_list = [self.ghost1, self.ghost2, self.ghost3]
-            if self.level == "less_easy":
-                ghost_list.append(self.ghost4)"""
 
             for ghost in self.ghost_list:
                 block_hit_list = pygame.sprite.spritecollide(ghost, self.walls, False)
@@ -175,25 +196,53 @@ class Game(object):
                 else:
                     self.player.explosion = True
                     self.game_over_sound.play()
-                    add_score(SCORE_FILE, str(self.score))
+                    if self.level == "easy":
+                        add_score(SCORE_FILE, str(self.score))
+                    else:
+                        add_score(SCORE_FILE_LVL2, str(self.score))
+
 
             self.game_over = self.player.game_over
-            # self.enemies.update()
+            self.game_over_screen = self.player.death
 
     def display_frame(self, screen):
         screen.fill(BLACK)
         # --- Drawing code should go here
         if self.game_over:
             if self.about:
-                text = "siema\nto moja gra\njest zajebista"
-                text_update(screen, text)
+                obi = pygame.image.load("images/obi_wan.png").convert_alpha()
+                obi = pygame.transform.rotate(obi, 270)
+                screen.blit(obi, (0, 50))
+                text_update(screen, ABOUT)
+                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+            elif self.game_over_screen:
+                pic = pygame.image.load("images/game_over_pic.jpg").convert_alpha()
+                pic = pygame.transform.scale(pic, (GAME_OVER_WIDTH, GAME_OVER_HEIGHT))
+                pos_title_x = (SCREEN_WIDTH / 2) - (GAME_OVER_WIDTH / 2)
+                pos_title_y = GAME_OVER_HEIGHT / 2
+                screen.blit(pic, (pos_title_x, pos_title_y))
+
+                self.display_message(screen, "Your score: {}".format(self.score), 25, 1, GREEN)
+                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
+            elif self.rules:
+                pic = pygame.image.load("images/arrow_keys.png").convert_alpha()
+                screen.blit(pic, (130, 40))
+                self.display_message(screen, "Use            to move the PACMAN", 17, 0.25, WHITE)
+                text_update(screen, RULES)
+                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
             elif self.best:
-                self.display_message(screen, "TOP 10 SCORES", 1/4)
-                leaderboard_update(screen, 200, 200, leaderboard_top(SCORE_FILE))
+                self.display_message(screen, "TOP 9 SCORES", 35, 1 / 5)
+                self.display_message(screen, "EASY          MEDIUM", 20, 2 / 5, WHITE)
+                draw_one_to_nine(screen, 125, 200, GREEN)
+                leaderboard_update(screen, 125, 200, leaderboard_top(SCORE_FILE), GREEN)
+                draw_one_to_nine(screen, 420, 200, YELLOW)
+                leaderboard_update(screen, 420, 200, leaderboard_top(SCORE_FILE_LVL2), YELLOW)
+                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
             else:
                 self.menu.display_frame(screen)
         else:
-            # --- Draw the game here ---
             self.walls.draw(screen)
             draw_enviroment(screen)
             self.dots_group.draw(screen)
@@ -201,31 +250,31 @@ class Game(object):
             screen.blit(self.player.image, self.player.rect)
             text = self.font.render("Score: " + str(self.score), True, RED)
             lives_text = self.font.render("Lives: " + str(self.lives), True, RED)
-            best_score = get_best_score(SCORE_FILE)
+            if self.level == "easy":
+                best_score = get_best_score(SCORE_FILE)
+            else:
+                best_score = get_best_score(SCORE_FILE_LVL2)
             best_score_text = self.font.render("Best score: " + str(best_score), True, RED)
-            screen.blit(text, [100, 8])
-            screen.blit(lives_text, [300, 8])  # tekst alternatywny do zdjec
-            screen.blit(best_score_text, [500, 8])
+            screen.blit(text, [50, 8])
+            screen.blit(lives_text, [230, 8])
+            screen.blit(best_score_text, [400, 8])
 
-        # --- Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 
-    def display_message(self, screen, message, place = 1, color=RED):
-        label = self.font.render(message, True, color)
-        # Get the width and height of the label
+    def display_message(self, screen, message, size, place=1, color=RED):
+        font = pygame.font.Font("ARCADE_R.TTF", int(size))
+        label = font.render(message, True, color)
         width = label.get_width()
         height = label.get_height()
-        # Determine the position of the label
         posX = (SCREEN_WIDTH / 2) - (width / 2)
         posY = ((SCREEN_HEIGHT / 2) - (height / 2)) * place
-        # Draw the label onto the screen
-        screen.blit(label, (posX, posY))
+        screen.blit(label, (posX, int(posY)))
 
 
 class Menu(object):
     state = 0
 
-    def __init__(self, items, font_color=BLACK, select_color=GREEN, ttf_font=None, font_size=25):
+    def __init__(self, items, font_color=BLACK, select_color=GREEN, ttf_font="ARCADE_R.TTF", font_size=15):
         self.font_color = font_color
         self.select_color = select_color
         self.items = items
@@ -233,10 +282,16 @@ class Menu(object):
         self.title = pygame.image.load("images/tytul.jpg").convert_alpha()
         self.title = pygame.transform.scale(self.title, (TITLE_WIDTH, TITLE_HEIGHT))
 
+        self.sound = pygame.mixer.Sound("sounds/are-you-sure-about-that.mp3")
+        self.click = pygame.mixer.Sound("sounds/pacman_sound.ogg")
+
     def display_frame(self, screen):
         for index, item in enumerate(self.items):
             if self.state == index:
-                label = self.font.render(item, True, self.select_color)
+                if index == 5:
+                    label = self.font.render(item, True, RED)
+                else:
+                    label = self.font.render(item, True, self.select_color)
             else:
                 label = self.font.render(item, True, self.font_color)
 
@@ -244,7 +299,7 @@ class Menu(object):
             height = label.get_height()
 
             pos_x = (SCREEN_WIDTH / 2) - (width / 2)
-            pos_y = (SCREEN_HEIGHT / 2) - (len(self.items) * height / 2) + (index * height)
+            pos_y = (SCREEN_HEIGHT / 2) - (len(self.items) * height / 2) + (index * height * 1.5) + 50
             pos_title_x = (SCREEN_WIDTH / 2) - (TITLE_WIDTH / 2)
             pos_title_y = TITLE_HEIGHT / 2
 
@@ -256,6 +311,11 @@ class Menu(object):
             if event.key == pygame.K_UP:
                 if self.state > 0:
                     self.state -= 1
+                    self.click.play()
+
             elif event.key == pygame.K_DOWN:
                 if self.state < len(self.items) - 1:
                     self.state += 1
+                    self.click.play()
+                if self.state == 5:
+                    self.sound.play()

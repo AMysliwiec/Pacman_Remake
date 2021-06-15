@@ -7,9 +7,10 @@ class Player(pygame.sprite.Sprite):
     change_y = ZERO_VEC.y
     explosion = False
     game_over = False
+    death = False
 
     def __init__(self, pos, filename):
-        # Call the parent class (sprite) constructor
+
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(filename).convert_alpha()
         self.image = pygame.transform.scale(self.image, (30, 30))
@@ -17,19 +18,19 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.topleft = vector(self.pos.x * CELL_SIZE, self.pos.y * CELL_SIZE)
-        # Load image which will be for the animation
+
         img = pygame.image.load("images/chodzenie.png").convert_alpha()
         img_down = pygame.image.load("images/walk_down.png").convert_alpha()
         img_up = pygame.image.load("images/pacman_back.png").convert_alpha()
-        # Create the animations objects
+
         self.move_right_animation = Animation(img, CELL_SIZE, CELL_SIZE)
         self.move_left_animation = Animation(pygame.transform.flip(img, True, False), CELL_SIZE, CELL_SIZE)
         self.move_up_animation = Animation(img_up, CELL_SIZE, CELL_SIZE)
         self.move_down_animation = Animation(img_down, CELL_SIZE, CELL_SIZE)
-        # Load explosion image
+
         img = pygame.image.load("images/ded.png").convert_alpha()
         self.explosion_animation = Animation(img, CELL_SIZE, CELL_SIZE)
-        # Save the player image
+
         self.player_image = pygame.image.load(filename).convert_alpha()
         self.player_image.set_colorkey(BLACK)
 
@@ -65,6 +66,7 @@ class Player(pygame.sprite.Sprite):
             if self.explosion_animation.index == self.explosion_animation.get_length() - 1:
                 pygame.time.wait(500)
                 self.game_over = True
+                self.death = True
             self.explosion_animation.update(6)
             self.image = self.explosion_animation.get_current_image()
 

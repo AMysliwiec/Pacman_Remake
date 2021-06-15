@@ -18,13 +18,37 @@ WALL_TOLERANCE = 5
 TITLE_WIDTH = int(SCREEN_WIDTH/4 * 3)
 TITLE_HEIGHT = int(SCREEN_HEIGHT/5)
 
+GAME_OVER_WIDTH = int(SCREEN_WIDTH/2)
+GAME_OVER_HEIGHT = int(SCREEN_HEIGHT/5)
+
+ARROW_WIDTH = 150
+ARROW_HEIGHT = 104
+
 SCORE_FILE = "best_scores.txt"
+SCORE_FILE_LVL2 = "best_scores_2.txt"
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
+ORANGE_RED = (243, 43, 20)
+
+ABOUT = "HELLO THERE\n" \
+        "MY NAME IS ALICJA\n" \
+        "AND I CREATED THIS GAME\n" \
+        "TO PERPETUATE THE FACT THAT\n" \
+        "YOU CAN ALSO DO COOL THINGS\n" \
+        "DURING YOUR STUDIES"
+
+RULES = "EAT ALL OF THE DOTS \n" \
+        "AND DON'T LET GHOST TO EAT YOU\n" \
+        "- ON THE LEVEL 'EASY' \n" \
+        "JUST CLICK THE ARROW \n" \
+        "TO CHANGE DIRECTION\n" \
+        "- ON THE SECOND LEVEL \n" \
+        "IT'S NOT THAT EASY ..."
 
 WALLS = []
 LINES = []
@@ -38,7 +62,6 @@ TRIANGLE_DOWN = []
 TRIANGLE_RIGHT = []
 TRIANGLE_LEFT = []
 CAN_GO = []
-
 
 with open('walls.txt', 'r') as file:
     for y_index, line in enumerate(file):
