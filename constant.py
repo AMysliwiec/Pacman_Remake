@@ -1,3 +1,7 @@
+"""
+This file contains all constants used in the game code.
+"""
+
 import pygame
 
 vector = pygame.math.Vector2
@@ -28,6 +32,7 @@ SCORE_FILE = "best_scores.txt"
 SCORE_FILE_LVL2 = "best_scores_2.txt"
 
 ARCADE_FONT = "ARCADE_R.TTF"
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -35,6 +40,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 ORANGE_RED = (243, 43, 20)
+
+# ======== STRINGS TO DISPLAY ON SCREEN ========== #
 
 ABOUT = "HELLO THERE\n" \
         "MY NAME IS ALICJA\n" \
@@ -48,7 +55,7 @@ RULES = "EAT ALL OF THE DOTS \n" \
         "- ON THE LEVEL 'EASY' \n" \
         "JUST CLICK THE ARROW \n" \
         "TO CHANGE DIRECTION\n" \
-        "- ON THE MEDIUM LEVEL \n" \
+        "- ON THE HARD LEVEL \n" \
         "IT'S NOT THAT EASY ..."
 
 EASY_MESSAGE = " \n" \
@@ -56,15 +63,17 @@ EASY_MESSAGE = " \n" \
                "DO YOU THINK THAT THIS RESULT\n" \
                "WILL BE SAVED AS THE BEST?\n" \
                " \n" \
-               "TRY YOUR SKILLS AT 'MEDIUM' LEVEL\n"
+               "TRY YOUR SKILLS AT 'HARD' LEVEL\n"
 
-MEDIUM_MESSAGE = " \n" \
+HARD_MESSAGE = " \n" \
                     "IMPRESSIVE...\n" \
                     "YOU MANAGED TO EAT EVERY DOT\n" \
                     "AND YOUR SCORE IS SO HIGH!\n" \
                     " \n" \
                     "LET THIS RESULT ALSO NOT BE SAVED\n" \
                     "SO THAT OTHERS ENJOY THE GAME TOO"
+
+# ============= USEFUL STUFF ============= #
 
 WALLS = []
 LINES = []

@@ -1,10 +1,19 @@
+"""
+In this module are 3 classes that are able to collide with the player -> Block(wall), Point and of course Ghost
+"""
 import pygame
 import random
 from constant import *
 
 
 class Block(pygame.sprite.Sprite):
+    """
+    Class of blocks that are inserted in place of the wall.
+    """
     def __init__(self, pos, width, height):
+        """
+        Class constructor.
+        """
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
         self.image.fill(BLACK)
@@ -14,7 +23,17 @@ class Block(pygame.sprite.Sprite):
 
 
 class Point(pygame.sprite.Sprite):
+    """
+    Class of points.
+    """
     def __init__(self, pos, color, width, height):
+        """
+        Class constructor.
+        :param pos: vector position
+        :param color: color of dot
+        :param width: width
+        :param height: height
+        """
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
         self.image.fill(BLACK)
@@ -26,8 +45,17 @@ class Point(pygame.sprite.Sprite):
 
 
 class Ghost(pygame.sprite.Sprite):
-
+    """
+    Class of ghosts
+    """
     def __init__(self, pos, change_x, change_y, color):
+        """
+        Class constructor.
+        :param pos: starting position vector
+        :change_x: argument determine the horizontal direction of the movement
+        :change_y: argument determine the vertical direction of the movement
+        :param color: color of ghost
+        """
         pygame.sprite.Sprite.__init__(self)
         self.change_x = change_x
         self.change_y = change_y
@@ -40,6 +68,10 @@ class Ghost(pygame.sprite.Sprite):
         self.rect.topleft = vector(int(self.pos.x * CELL_SIZE), int(self.pos.y * CELL_SIZE))
 
     def define_ghosts(self, direction):
+        """
+        Function determines the direction in which the ghost is moving and changes the image
+        :param direction: (left or right)
+        """
         if self.color == "pink":
             self.image = pygame.image.load(r"images/{}_ghost_{}.png".format(self.color, direction)).convert_alpha()
         elif self.color == "blue":
@@ -51,6 +83,9 @@ class Ghost(pygame.sprite.Sprite):
             self.image = pygame.transform.scale(self.image, CELL)
 
     def update(self):
+        """
+        Update movement.
+        """
         self.rect.x += self.change_x
         self.rect.y += self.change_y
         if self.rect.right < 0:
@@ -72,6 +107,9 @@ class Ghost(pygame.sprite.Sprite):
             pass
 
     def check_way(self):
+        """
+        Function randomly changes the direction of movement if the ghost is in the right place.
+        """
         if self.rect.topleft in CROSS:
             self.direction = random.choice((LEFT, RIGHT, UP, DOWN))
             self.change_x = self.direction.x * self.velocity

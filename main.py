@@ -1,3 +1,6 @@
+"""
+MAIN PYTHON FILE TO RUN THE GAME
+"""
 import pygame
 from game import Game
 from helper_functions import *
@@ -18,7 +21,7 @@ def main():
     game = Game()
     while not done:
         done = game.process_events()
-        game.run_logic()
+        game.gameplay()
         game.display_frame(screen)
         clock.tick(30)
     pygame.quit()

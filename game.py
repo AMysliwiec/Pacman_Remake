@@ -1,3 +1,6 @@
+"""
+This module contains a Game class and Menu class that are strongly connected with the gameplay.
+"""
 import pygame
 from player import Player
 from enemies import *
@@ -6,6 +9,9 @@ from constant import *
 
 
 class Game(object):
+    """
+    Class GAME
+    """
     score = -1
     lives = 3
 
@@ -16,6 +22,12 @@ class Game(object):
     level = "easy"
 
     def __init__(self):
+        """
+        Class constructor.
+        """
+
+        # SCREEN DISPLAY MODES
+
         self.font = pygame.font.Font(None, 40)
         self.about = False
         self.rules = False
@@ -23,11 +35,10 @@ class Game(object):
         self.game_over = True
         self.game_over_screen = False
         self.end_easy = False
-        self.end_medium = False
+        self.end_hard = False
 
         self.font = pygame.font.Font(ARCADE_FONT, 15)
-        self.menu = Menu(("Easy LVL", "Medium LVL", "How to play", "About", "Best scores", "Exit"),
-                         font_color=WHITE, font_size=30)
+        self.menu = Menu(("Easy LVL", "Hard LVL", "How to play", "About", "Best scores", "Exit"), font_size=30)
         self.player = Player(PACMAN_PLACE, "images/start.png")
 
         self.walls = pygame.sprite.Group()
@@ -39,19 +50,21 @@ class Game(object):
         self.ghost2 = Ghost(vector(17, 2), 0, -3, "blue")
         self.ghost3 = Ghost(vector(1, 1), 0, 3, "green")
 
-        if self.level == "medium":
+        if self.level == "hard":
             self.ghost1 = Ghost(vector(1, 18), 0, -3, "pink")
             self.ghost4 = Ghost(vector(17, 17), 0, -3, "orange")
 
         self.ghost_list = [self.ghost1, self.ghost2, self.ghost3]
 
-        if self.level == "medium":
+        if self.level == "hard":
             self.ghost_list.append(self.ghost4)
             for ghost in self.ghost_list:
                 ghost.velocity = VEL * 2
 
         for ghost in self.ghost_list:
             self.enemies.add(ghost)
+
+        # LOAD THE SOUNDS
 
         self.pacman_sound = pygame.mixer.Sound("sounds/pacman_sound.ogg")
         self.game_over_sound = pygame.mixer.Sound("sounds/game_over_sound.ogg")
@@ -60,20 +73,23 @@ class Game(object):
         self.win = pygame.mixer.Sound("sounds/pac-man-intermission.mp3")
 
     def process_events(self):
+        """
+        Function is responsible for 'clicking' actions.
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
             if self.game_over and not self.about and not self.game_over_screen \
-                    and not self.rules and not self.best and not self.end_medium and not self.end_easy:
+                    and not self.rules and not self.best and not self.end_hard and not self.end_easy:
                 self.menu.event_handler(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
 
                     if self.game_over and not self.about and not self.game_over_screen \
-                            and not self.rules and not self.best and not self.end_medium and not self.end_easy:
+                            and not self.rules and not self.best and not self.end_hard and not self.end_easy:
 
                         if self.menu.state == 0:
-                            # ---- START ------
+                            # ---- START EASY------
                             self.level = "easy"
                             self.score = -1
                             self.lives = 3
@@ -84,7 +100,8 @@ class Game(object):
                             self.game_over = False
 
                         elif self.menu.state == 1:
-                            self.level = "medium"
+                            # ---- START HARD------
+                            self.level = "hard"
                             self.score = -1
                             self.lives = 1
                             self.dots_group.empty()
@@ -103,12 +120,11 @@ class Game(object):
                             self.about = True
 
                         elif self.menu.state == 4:
-                            # --- LEADERBOARD ------
+                            # --- BEST SCORES ------
                             self.best = True
 
                         elif self.menu.state == 5:
                             # --- EXIT -------
-                            # User clicked exit
                             return True
 
                 elif event.key == pygame.K_RIGHT:
@@ -132,9 +148,9 @@ class Game(object):
                     self.rules = False
                     self.game_over_screen = False
                     self.end_easy = False
-                    self.end_medium = False
+                    self.end_hard = False
 
-            if self.level == "medium":
+            if self.level == "hard":
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_RIGHT:
                         self.player.stop_move_right()
@@ -147,7 +163,10 @@ class Game(object):
 
         return False
 
-    def run_logic(self):
+    def gameplay(self):
+        """
+        Full gameplay function.
+        """
         if not self.game_over:
             self.player.update()
             block_hit_list = pygame.sprite.spritecollide(self.player, self.dots_group, True)
@@ -214,11 +233,15 @@ class Game(object):
                 if self.level == "easy":
                     self.end_easy = True
                 else:
-                    self.end_medium = True
+                    self.end_hard = True
 
 # ========================= DRAW THE GAME =============================== #
 
     def display_frame(self, screen):
+        """
+        Function displays the selected frame depending on the mode.
+        "param screen: screen
+        """
         screen.fill(BLACK)
         if self.game_over:
             if self.about:
@@ -227,6 +250,7 @@ class Game(object):
                 screen.blit(obi, (0, 50))
                 text_update(screen, ABOUT)
                 display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
             elif self.game_over_screen:
                 pic = pygame.image.load("images/game_over_pic.jpg").convert_alpha()
                 pic = pygame.transform.scale(pic, (GAME_OVER_WIDTH, GAME_OVER_HEIGHT))
@@ -237,9 +261,9 @@ class Game(object):
                 display_message(screen, "Your score: {}".format(self.score), 25, 1, GREEN)
                 display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
 
-            elif self.end_medium:
+            elif self.end_hard:
                 display_message(screen, "YOU WIN!", 40, 0.25, ORANGE_RED)
-                text_update(screen, MEDIUM_MESSAGE)
+                text_update(screen, HARD_MESSAGE)
                 display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
 
             elif self.end_easy:
@@ -256,12 +280,13 @@ class Game(object):
 
             elif self.best:
                 display_message(screen, "TOP 9 SCORES", 35, 0.2)
-                display_message(screen, "EASY          MEDIUM", 20, 0.4, WHITE)
+                display_message(screen, "EASY          HARD", 20, 0.4, WHITE)
                 draw_one_to_nine(screen, 125, 200, GREEN)
-                leaderboard_update(screen, 125, 200, leaderboard_top(SCORE_FILE), GREEN)
+                update_best_scores(screen, 125, 200, get_top_scores(SCORE_FILE), GREEN)
                 draw_one_to_nine(screen, 420, 200, YELLOW)
-                leaderboard_update(screen, 420, 200, leaderboard_top(SCORE_FILE_LVL2), YELLOW)
+                update_best_scores(screen, 420, 200, get_top_scores(SCORE_FILE_LVL2), YELLOW)
                 display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
             else:
                 self.menu.display_frame(screen)
         else:
@@ -272,10 +297,12 @@ class Game(object):
             screen.blit(self.player.image, self.player.rect)
             text = self.font.render("Score: " + str(self.score), True, ORANGE_RED)
             lives_text = self.font.render("Lives: " + str(self.lives), True, ORANGE_RED)
+
             if self.level == "easy":
                 best_score = get_best_score(SCORE_FILE)
             else:
                 best_score = get_best_score(SCORE_FILE_LVL2)
+
             best_score_text = self.font.render("Best score: " + str(best_score), True, ORANGE_RED)
             screen.blit(text, [50, 8])
             screen.blit(lives_text, [230, 8])
@@ -285,13 +312,19 @@ class Game(object):
 
 
 class Menu(object):
+    """
+    Menu class.
+    """
     state = 0
 
-    def __init__(self, items, font_color=BLACK, select_color=GREEN, ttf_font=ARCADE_FONT, font_size=15):
-        self.font_color = font_color
-        self.select_color = select_color
+    def __init__(self, items, font_size=15):
+        """
+        Class constructor
+        :param items: modes displayed on teh screen
+        :param font_size: font size
+        """
         self.items = items
-        self.font = pygame.font.Font(ttf_font, font_size)
+        self.font = pygame.font.Font(ARCADE_FONT, font_size)
         self.title = pygame.image.load("images/tytul.jpg").convert_alpha()
         self.title = pygame.transform.scale(self.title, (TITLE_WIDTH, TITLE_HEIGHT))
 
@@ -299,14 +332,18 @@ class Menu(object):
         self.click = pygame.mixer.Sound("sounds/pacman_sound.ogg")
 
     def display_frame(self, screen):
+        """
+        Function displays the frame from the constructor items.
+        :param screen: screen
+        """
         for index, item in enumerate(self.items):
             if self.state == index:
                 if index == 5:
                     label = self.font.render(item, True, RED)
                 else:
-                    label = self.font.render(item, True, self.select_color)
+                    label = self.font.render(item, True, GREEN)
             else:
-                label = self.font.render(item, True, self.font_color)
+                label = self.font.render(item, True, WHITE)
 
             width = label.get_width()
             height = label.get_height()
@@ -320,6 +357,10 @@ class Menu(object):
             screen.blit(self.title, (pos_title_x, pos_title_y))
 
     def event_handler(self, event):
+        """
+        With this function you can navigate through the menu.
+        :param event: pygame event
+        """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 if self.state > 0:

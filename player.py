@@ -1,23 +1,35 @@
+"""
+This module contains Player and Animation class.
+"""
 import pygame
 from constant import *
 
 
 class Player(pygame.sprite.Sprite):
+    """
+    Player class (PACMAN)
+    """
     change_x = ZERO_VEC.x
     change_y = ZERO_VEC.y
     explosion = False
     game_over = False
     death = False
 
-    def __init__(self, pos, filename):
-
+    def __init__(self, pos, image_file):
+        """
+        Class constructor.
+        :param pos: starting vector position
+        :param image_file: pacman image
+        """
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(filename).convert_alpha()
+        self.image = pygame.image.load(image_file).convert_alpha()
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.topleft = vector(self.pos.x * CELL_SIZE, self.pos.y * CELL_SIZE)
+
+        # LOAD THE MOVEMENT ANIMATIONS
 
         img = pygame.image.load("images/chodzenie.png").convert_alpha()
         img_down = pygame.image.load("images/walk_down.png").convert_alpha()
@@ -31,10 +43,13 @@ class Player(pygame.sprite.Sprite):
         img = pygame.image.load("images/ded.png").convert_alpha()
         self.explosion_animation = Animation(img, CELL_SIZE, CELL_SIZE)
 
-        self.player_image = pygame.image.load(filename).convert_alpha()
+        self.player_image = pygame.image.load(image_file).convert_alpha()
         self.player_image.set_colorkey(BLACK)
 
     def update(self):
+        """
+        Movement pacman update.
+        """
         if not self.explosion:
             if self.rect.right < 0:
                 self.rect.left = SCREEN_WIDTH
@@ -107,6 +122,9 @@ class Player(pygame.sprite.Sprite):
 
 
 class Animation(object):
+    """
+    Animation class
+    """
     def __init__(self, img, width, height):
         self.sprite_sheet = img
         self.image_list = []
