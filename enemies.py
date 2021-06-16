@@ -1,8 +1,6 @@
 import pygame
 import random
-from helper_functions import *
 from constant import *
-
 
 
 class Block(pygame.sprite.Sprite):
@@ -73,13 +71,6 @@ class Ghost(pygame.sprite.Sprite):
         else:
             pass
 
-        '''if self.personality == 'passive':
-            self.image = pygame.image.load("poor_ghost_right.png").convert_alpha()
-            pygame.transform.scale(self.image, (35, 35))
-        else:
-            self.image = pygame.image.load("blue_ghost_right.png").convert_alpha()
-            pygame.transform.scale(self.image, (35, 35))'''
-
     def check_way(self):
         if self.rect.topleft in CROSS:
             self.direction = random.choice((LEFT, RIGHT, UP, DOWN))
@@ -117,55 +108,3 @@ class Ghost(pygame.sprite.Sprite):
             self.direction = random.choice((RIGHT, UP, DOWN))
             self.change_x = self.direction.x * self.velocity
             self.change_y = self.direction.y * self.velocity
-
-
-def enviroment():
-    grid = GRID
-    return grid
-
-
-def draw_up(screen, j, i):
-    pygame.draw.line(screen, BLUE, [j * CELL_SIZE, i * CELL_SIZE], [(j + 1) * CELL_SIZE, i * CELL_SIZE], 3)
-
-
-def draw_down(screen, j, i):
-    pygame.draw.line(screen, BLUE, [j * CELL_SIZE, (i + 1) * CELL_SIZE], [(j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE], 3)
-
-
-def draw_right(screen, j, i):
-    pygame.draw.line(screen, BLUE, [(j + 1) * CELL_SIZE, i * CELL_SIZE], [(j + 1) * CELL_SIZE, (i + 1) * CELL_SIZE], 3)
-
-
-def draw_left(screen, j, i):
-    pygame.draw.line(screen, BLUE, [j * CELL_SIZE, i * CELL_SIZE], [j * CELL_SIZE, (i + 1) * CELL_SIZE], 3)
-
-
-def draw_enviroment(screen):
-    for i, row in enumerate(enviroment()):
-        for j, item in enumerate(row):
-            if item == 1:  # prosto poziomo linia
-                draw_up(screen, j, i)  # gora
-                draw_down(screen, j, i)  # dol
-            elif item == 2:  # prosta poizomo linia
-                draw_left(screen, j, i)  # lewo
-                draw_right(screen, j, i)  # prawo
-            elif item == 4:  # prawy dolny rog
-                draw_down(screen, j, i)
-                draw_right(screen, j, i)
-            elif item == 5:  # lewy dolny rog
-                draw_down(screen, j, i)
-                draw_left(screen, j, i)
-            elif item == 6:  # prawy gorny rog
-                draw_up(screen, j, i)  # gora
-                draw_right(screen, j, i)  # prawo
-            elif item == 7:  # lewy gorny rog
-                draw_up(screen, j, i)
-                draw_left(screen, j, i)
-            elif item == 'p':
-                draw_left(screen, j, i)
-            elif item == 'l':
-                draw_right(screen, j, i)
-            elif item == 'd':
-                draw_up(screen, j, i)
-            elif item == 'g':
-                draw_down(screen, j, i)

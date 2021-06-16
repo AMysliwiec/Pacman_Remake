@@ -1,5 +1,5 @@
 import pygame
-from game_test import Game
+from game import Game
 from helper_functions import *
 from constant import *
 
@@ -11,10 +11,11 @@ def main():
     icon = pygame.image.load('images/test.png')
     icon = pygame.transform.scale(icon, CELL)
     pygame.display.set_icon(icon)
+    sound = pygame.mixer.Sound("sounds/pac-man-intro.mp3")
+    sound.play()
     done = False
     clock = pygame.time.Clock()
     game = Game()
-    # -------- Main Program Loop -----------
     while not done:
         done = game.process_events()
         game.run_logic()

@@ -1,6 +1,6 @@
 import pygame
-from player_test import Player
-from enemies_test import *
+from player import Player
+from enemies import *
 from helper_functions import *
 from constant import *
 
@@ -22,9 +22,11 @@ class Game(object):
         self.best = False
         self.game_over = True
         self.game_over_screen = False
+        self.end_easy = False
+        self.end_medium = False
 
-        self.font = pygame.font.Font("ARCADE_N.TTF", 15)
-        self.menu = Menu(("Easy LVL", "Less Easy LVL", "How to play", "About", "Best scores", "Exit"),
+        self.font = pygame.font.Font(ARCADE_FONT, 15)
+        self.menu = Menu(("Easy LVL", "Medium LVL", "How to play", "About", "Best scores", "Exit"),
                          font_color=WHITE, font_size=30)
         self.player = Player(PACMAN_PLACE, "images/start.png")
 
@@ -37,13 +39,13 @@ class Game(object):
         self.ghost2 = Ghost(vector(17, 2), 0, -3, "blue")
         self.ghost3 = Ghost(vector(1, 1), 0, 3, "green")
 
-        if self.level == "less_easy":
+        if self.level == "medium":
             self.ghost1 = Ghost(vector(1, 18), 0, -3, "pink")
             self.ghost4 = Ghost(vector(17, 17), 0, -3, "orange")
 
         self.ghost_list = [self.ghost1, self.ghost2, self.ghost3]
 
-        if self.level == "less_easy":
+        if self.level == "medium":
             self.ghost_list.append(self.ghost4)
             for ghost in self.ghost_list:
                 ghost.velocity = VEL * 2
@@ -55,19 +57,20 @@ class Game(object):
         self.game_over_sound = pygame.mixer.Sound("sounds/game_over_sound.ogg")
         self.hit_sound = pygame.mixer.Sound("sounds/hit_sound.ogg")
         self.hello = pygame.mixer.Sound("sounds/obi-wan-hello-there.mp3")
-        self.hello.set_volume(10.0)
+        self.win = pygame.mixer.Sound("sounds/pac-man-intermission.mp3")
 
     def process_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
-            if self.game_over and not self.game_over_screen:
+            if self.game_over and not self.about and not self.game_over_screen \
+                    and not self.rules and not self.best and not self.end_medium and not self.end_easy:
                 self.menu.event_handler(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
 
                     if self.game_over and not self.about and not self.game_over_screen \
-                            and not self.rules and not self.best:
+                            and not self.rules and not self.best and not self.end_medium and not self.end_easy:
 
                         if self.menu.state == 0:
                             # ---- START ------
@@ -81,7 +84,7 @@ class Game(object):
                             self.game_over = False
 
                         elif self.menu.state == 1:
-                            self.level = "less_easy"
+                            self.level = "medium"
                             self.score = -1
                             self.lives = 1
                             self.dots_group.empty()
@@ -93,7 +96,6 @@ class Game(object):
                         elif self.menu.state == 2:
                             # --- HOW TO PLAY ------
                             self.rules = True
-
 
                         elif self.menu.state == 3:
                             # --- ABOUT ------
@@ -123,13 +125,16 @@ class Game(object):
 
                 elif event.key == pygame.K_ESCAPE:
                     self.pacman_sound.play()
+                    self.win.stop()
                     self.game_over = True
                     self.about = False
                     self.best = False
                     self.rules = False
                     self.game_over_screen = False
+                    self.end_easy = False
+                    self.end_medium = False
 
-            if self.level == "less_easy":
+            if self.level == "medium":
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_RIGHT:
                         self.player.stop_move_right()
@@ -186,7 +191,6 @@ class Game(object):
                         elif ghost.change_y < 0:
                             ghost.rect.top = wall.rect.bottom
                             ghost.change_y = 0
-
             block_hit_list = pygame.sprite.spritecollide(self.player, self.enemies, True)
             if len(block_hit_list) > 0:
                 self.lives -= 1
@@ -201,20 +205,28 @@ class Game(object):
                     else:
                         add_score(SCORE_FILE_LVL2, str(self.score))
 
-
             self.game_over = self.player.game_over
             self.game_over_screen = self.player.death
+            if not self.dots_group:
+            # if len(self.dots_group.sprites()) == 180:
+                self.win.play()
+                self.game_over = True
+                if self.level == "easy":
+                    self.end_easy = True
+                else:
+                    self.end_medium = True
+
+# ========================= DRAW THE GAME =============================== #
 
     def display_frame(self, screen):
         screen.fill(BLACK)
-        # --- Drawing code should go here
         if self.game_over:
             if self.about:
                 obi = pygame.image.load("images/obi_wan.png").convert_alpha()
                 obi = pygame.transform.rotate(obi, 270)
                 screen.blit(obi, (0, 50))
                 text_update(screen, ABOUT)
-                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
             elif self.game_over_screen:
                 pic = pygame.image.load("images/game_over_pic.jpg").convert_alpha()
                 pic = pygame.transform.scale(pic, (GAME_OVER_WIDTH, GAME_OVER_HEIGHT))
@@ -222,24 +234,34 @@ class Game(object):
                 pos_title_y = GAME_OVER_HEIGHT / 2
                 screen.blit(pic, (pos_title_x, pos_title_y))
 
-                self.display_message(screen, "Your score: {}".format(self.score), 25, 1, GREEN)
-                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+                display_message(screen, "Your score: {}".format(self.score), 25, 1, GREEN)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
+            elif self.end_medium:
+                display_message(screen, "YOU WIN!", 40, 0.25, ORANGE_RED)
+                text_update(screen, MEDIUM_MESSAGE)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+
+            elif self.end_easy:
+                display_message(screen, "YOU ... WIN?", 40, 0.25, ORANGE_RED)
+                text_update(screen, EASY_MESSAGE)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
 
             elif self.rules:
                 pic = pygame.image.load("images/arrow_keys.png").convert_alpha()
                 screen.blit(pic, (130, 40))
-                self.display_message(screen, "Use            to move the PACMAN", 17, 0.25, WHITE)
+                display_message(screen, "Use            to move the PACMAN", 17, 0.25, WHITE)
                 text_update(screen, RULES)
-                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
 
             elif self.best:
-                self.display_message(screen, "TOP 9 SCORES", 35, 1 / 5)
-                self.display_message(screen, "EASY          MEDIUM", 20, 2 / 5, WHITE)
+                display_message(screen, "TOP 9 SCORES", 35, 0.2)
+                display_message(screen, "EASY          MEDIUM", 20, 0.4, WHITE)
                 draw_one_to_nine(screen, 125, 200, GREEN)
                 leaderboard_update(screen, 125, 200, leaderboard_top(SCORE_FILE), GREEN)
                 draw_one_to_nine(screen, 420, 200, YELLOW)
                 leaderboard_update(screen, 420, 200, leaderboard_top(SCORE_FILE_LVL2), YELLOW)
-                self.display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
+                display_message(screen, "Press ESC to back to the main menu", 15, 1.9, ORANGE_RED)
             else:
                 self.menu.display_frame(screen)
         else:
@@ -248,33 +270,24 @@ class Game(object):
             self.dots_group.draw(screen)
             self.enemies.draw(screen)
             screen.blit(self.player.image, self.player.rect)
-            text = self.font.render("Score: " + str(self.score), True, RED)
-            lives_text = self.font.render("Lives: " + str(self.lives), True, RED)
+            text = self.font.render("Score: " + str(self.score), True, ORANGE_RED)
+            lives_text = self.font.render("Lives: " + str(self.lives), True, ORANGE_RED)
             if self.level == "easy":
                 best_score = get_best_score(SCORE_FILE)
             else:
                 best_score = get_best_score(SCORE_FILE_LVL2)
-            best_score_text = self.font.render("Best score: " + str(best_score), True, RED)
+            best_score_text = self.font.render("Best score: " + str(best_score), True, ORANGE_RED)
             screen.blit(text, [50, 8])
             screen.blit(lives_text, [230, 8])
             screen.blit(best_score_text, [400, 8])
 
         pygame.display.flip()
 
-    def display_message(self, screen, message, size, place=1, color=RED):
-        font = pygame.font.Font("ARCADE_R.TTF", int(size))
-        label = font.render(message, True, color)
-        width = label.get_width()
-        height = label.get_height()
-        posX = (SCREEN_WIDTH / 2) - (width / 2)
-        posY = ((SCREEN_HEIGHT / 2) - (height / 2)) * place
-        screen.blit(label, (posX, int(posY)))
-
 
 class Menu(object):
     state = 0
 
-    def __init__(self, items, font_color=BLACK, select_color=GREEN, ttf_font="ARCADE_R.TTF", font_size=15):
+    def __init__(self, items, font_color=BLACK, select_color=GREEN, ttf_font=ARCADE_FONT, font_size=15):
         self.font_color = font_color
         self.select_color = select_color
         self.items = items

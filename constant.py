@@ -15,11 +15,11 @@ CELL = (CELL_SIZE, CELL_SIZE)
 VEL = 3
 WALL_TOLERANCE = 5
 
-TITLE_WIDTH = int(SCREEN_WIDTH/4 * 3)
-TITLE_HEIGHT = int(SCREEN_HEIGHT/5)
+TITLE_WIDTH = int(SCREEN_WIDTH / 4 * 3)
+TITLE_HEIGHT = int(SCREEN_HEIGHT / 5)
 
-GAME_OVER_WIDTH = int(SCREEN_WIDTH/2)
-GAME_OVER_HEIGHT = int(SCREEN_HEIGHT/5)
+GAME_OVER_WIDTH = int(SCREEN_WIDTH / 2)
+GAME_OVER_HEIGHT = int(SCREEN_HEIGHT / 5)
 
 ARROW_WIDTH = 150
 ARROW_HEIGHT = 104
@@ -27,6 +27,7 @@ ARROW_HEIGHT = 104
 SCORE_FILE = "best_scores.txt"
 SCORE_FILE_LVL2 = "best_scores_2.txt"
 
+ARCADE_FONT = "ARCADE_R.TTF"
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -47,8 +48,23 @@ RULES = "EAT ALL OF THE DOTS \n" \
         "- ON THE LEVEL 'EASY' \n" \
         "JUST CLICK THE ARROW \n" \
         "TO CHANGE DIRECTION\n" \
-        "- ON THE SECOND LEVEL \n" \
+        "- ON THE MEDIUM LEVEL \n" \
         "IT'S NOT THAT EASY ..."
+
+EASY_MESSAGE = " \n" \
+               " \n" \
+               "DO YOU THINK THAT THIS RESULT\n" \
+               "WILL BE SAVED AS THE BEST?\n" \
+               " \n" \
+               "TRY YOUR SKILLS AT 'MEDIUM' LEVEL\n"
+
+MEDIUM_MESSAGE = " \n" \
+                    "IMPRESSIVE...\n" \
+                    "YOU MANAGED TO EAT EVERY DOT\n" \
+                    "AND YOUR SCORE IS SO HIGH!\n" \
+                    " \n" \
+                    "LET THIS RESULT ALSO NOT BE SAVED\n" \
+                    "SO THAT OTHERS ENJOY THE GAME TOO"
 
 WALLS = []
 LINES = []
@@ -93,9 +109,6 @@ with open('walls.txt', 'r') as file:
                 TRIANGLE_UP.append(vector(x_index * CELL_SIZE, y_index * CELL_SIZE))
             if char == 'd':
                 TRIANGLE_DOWN.append(vector(x_index * CELL_SIZE, y_index * CELL_SIZE))
-
-
-
 
 GRID = ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         (0, 7, 1, 1, 'd', 1, 1, 1, 6, 0, 7, 1, 1, 1, 'd', 1, 1, 6, 0),
