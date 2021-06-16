@@ -20,20 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a6eb2ce-d2c4-427a-8f41-14d49c4f066d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARCADE_I.TTF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARCADE_N.TTF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/best_scores.txt" beforeDir="false" afterPath="$PROJECT_DIR$/best_scores.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/best_scores_2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/best_scores_2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/constant.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enemies_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helper_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/helper_functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/desc_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/desc_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/desc_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/desc_2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/desc_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/desc_3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/player_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/desc_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/desc_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/desc_3.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -169,7 +159,7 @@
       <updated>1622394985698</updated>
       <workItem from="1622394989390" duration="5651000" />
       <workItem from="1623755074273" duration="18216000" />
-      <workItem from="1623786450343" duration="12673000" />
+      <workItem from="1623786450343" duration="13076000" />
     </task>
     <servers />
   </component>
