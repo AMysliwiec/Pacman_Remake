@@ -1,4 +1,4 @@
-# Pacman_AlutkaEdition
+# Pacman
 ## Author: Alicja Myśliwiec
 ### Description:
 Pacman is a classic maze action game in which you have to eat all the dots while avoiding ghosts.  
